@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 1207
+      MYSQL_DATABASE: PDVs
+    ports:
+      - '3306:3306'
+    networks:
+      - my-network
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_USER: roneyalmeida
+      DATABASE_PASSWORD: 1207
+      DATABASE_NAME: PDVs
+      DATABASE_PORT: 3306
+    depends_on:
+      - db
+    networks:
+      - my-network
+
+networks:
+  my-network:
