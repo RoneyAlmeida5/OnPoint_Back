@@ -20,6 +20,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src", "src/@types/express.d.ts"],
   "exclude": ["node_modules"]
 }

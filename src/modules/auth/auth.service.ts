@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-
 import * as jwt from 'jsonwebtoken';
 import { User } from '../users/user.entity';
 import { LoginDto } from './dto/login.dto';
@@ -30,10 +29,14 @@ export class AuthService {
 
     const token = this.generateToken(user);
 
+    // Atualiza o campo token do usuário no banco de dados
+    user.token = token;
+    await this.userRepository.save(user);
+
     return { user, token };
   }
 
   private generateToken(user: User) {
-    return jwt.sign({ userId: user.id }, 'secrectKey', { expiresIn: '1h' });
+    return jwt.sign({ userId: user.id }, 'secretKey', { expiresIn: '1h' });
   }
 }

@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { CreateUserDto } from '../auth/dto/create-user.dto';
 import { UpdateUserDto } from '../auth/dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken'; // Importe a biblioteca jsonwebtoken
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,17 @@ export class UsersService {
       ...createUserDto,
       password: hashedPassword,
     });
-    return this.userRepository.save(user);
+
+    const savedUser = await this.userRepository.save(user);
+
+    // Gere o token JWT
+    const token = this.generateToken(savedUser);
+
+    // Atualize o usuário com o token gerado
+    savedUser.token = token;
+    await this.userRepository.save(savedUser);
+
+    return savedUser;
   }
 
   findAll() {
@@ -37,5 +48,9 @@ export class UsersService {
 
   remove(id: number) {
     return this.userRepository.delete(id);
+  }
+
+  private generateToken(user: User) {
+    return jwt.sign({ userId: user.id }, 'secretKey', { expiresIn: '1h' });
   }
 }
