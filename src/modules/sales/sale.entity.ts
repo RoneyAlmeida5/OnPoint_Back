@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
 import { Payment } from '../payments/payment.entity';
@@ -8,13 +14,16 @@ export class Sale {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.sales)
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Product, (product) => product.sales)
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Payment, (payment) => payment.sales)
+  @ManyToOne(() => Payment)
+  @JoinColumn({ name: 'payment_id' })
   payment: Payment;
 
   @Column()
