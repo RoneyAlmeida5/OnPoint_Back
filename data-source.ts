@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { User } from './dist/modules/users/user.entity.js';
+import { Product } from './dist/modules/products/product.entity.js';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   username: 'root',
   password: '1207',
   database: 'PDVs',
-  entities: [User],
+  entities: [Product],
   migrations: ['dist/migrations/*.js'],
   synchronize: false, // Importante: não use true em produção
 });
