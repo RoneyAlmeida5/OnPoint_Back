@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, Generated } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Sale } from '../sales/sale.entity';
 
 @Entity('users')
 export class User {
@@ -19,6 +20,9 @@ export class User {
 
   @Column({ default: '' })
   token: string;
+
+  @OneToMany(() => Sale, (sale) => sale.user)
+  sales: Sale[];
 
   @Column({ default: false })
   user_blocked: boolean;

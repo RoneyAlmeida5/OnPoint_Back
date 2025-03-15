@@ -1,24 +1,20 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
 import { Payment } from '../payments/payment.entity';
 
-@Entity()
+@Entity('sales')
 export class Sale {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Product)
-  @JoinColumn({ name: 'product_id' })
+  @ManyToOne(() => User, (user) => user.sales)
+  user: User;
+
+  @ManyToOne(() => Product, (product) => product.sales)
   product: Product;
 
-  @ManyToOne(() => Payment)
-  @JoinColumn({ name: 'payment_id' })
+  @ManyToOne(() => Payment, (payment) => payment.sales)
   payment: Payment;
 
   @Column()
