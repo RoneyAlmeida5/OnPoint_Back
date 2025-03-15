@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sale } from './sale.entity';
+import { CreateSaleDto } from './dto/create-sale.dto';
+import { UpdateSaleDto } from './dto/update-sale.dto';
 
 @Injectable()
 export class SalesService {
@@ -11,22 +13,41 @@ export class SalesService {
   ) {}
 
   async findAll(): Promise<Sale[]> {
-    return this.salesRepository.find({ relations: ['product', 'payment'] });
+    return this.salesRepository.find();
   }
 
   async findOne(id: number): Promise<Sale> {
-    return this.salesRepository.findOne({
-      where: { id },
-      relations: ['product', 'payment'],
-    });
+    const sale = await this.salesRepository.findOne({ where: { id } });
+
+    if (!sale) {
+      throw new Error(`Venda com ID ${id} não encontrada`);
+    }
+
+    return sale;
   }
 
-  async create(sale: Partial<Sale>): Promise<Sale> {
+  async create(createSaleDto: CreateSaleDto): Promise<Sale> {
+    const sale = this.salesRepository.create({
+      ...createSaleDto,
+      date_sale: new Date(createSaleDto.date_sale), // ✅ Convertendo string para Date
+    });
+
     return this.salesRepository.save(sale);
   }
 
-  async update(id: number, sale: Partial<Sale>): Promise<void> {
-    await this.salesRepository.update(id, sale);
+  async update(id: number, updateSaleDto: UpdateSaleDto): Promise<Sale> {
+    const existingSale = await this.findOne(id); // ✅ Agora garantimos que não será null
+
+    const updatedSale = {
+      ...existingSale,
+      ...updateSaleDto,
+      date_sale: updateSaleDto.date_sale
+        ? new Date(updateSaleDto.date_sale)
+        : existingSale.date_sale,
+    };
+
+    await this.salesRepository.save(updatedSale);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<void> {
