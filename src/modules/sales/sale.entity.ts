@@ -9,26 +9,26 @@ import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
 import { Payment } from '../payments/payment.entity';
 
-@Entity('sales')
+@Entity('sales') // Nome explícito da tabela
 export class Sale {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Payment)
+  @ManyToOne(() => Payment, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'payment_id' })
   payment: Payment;
 
-  @Column()
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' }) // Correção do tipo para MySQL
   date_sale: Date;
 
-  @Column()
+  @Column({ type: 'int', unsigned: true }) // Correção para números positivos
   quantity: number;
 }
