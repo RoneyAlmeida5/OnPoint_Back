@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductsController } from '../products/products.controller';
-import { ProductsService } from '../products/products.service';
-import { Product } from '../products/product.entity';
+import { ProductsController } from './products.controller';
+import { ProductsService } from './products.service';
+import { Product } from './product.entity';
+import { AuthModule } from '../auth/auth.module'; // Importa o módulo de autenticação para fornecer o AuthGuard
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [TypeOrmModule.forFeature([Product]), AuthModule], // Adiciona o AuthModule
   controllers: [ProductsController],
   providers: [ProductsService],
   exports: [ProductsService], // Opcional: exporta o serviço se for usado em outros módulos

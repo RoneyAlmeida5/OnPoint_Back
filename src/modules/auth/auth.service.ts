@@ -1,42 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import { User } from '../users/user.entity';
+// Exemplo de auth.service.ts
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import { UsersService } from '../users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private jwtService: JwtService,
+    private usersService: UsersService,
   ) {}
 
-  async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-
-    const user = await this.userRepository.findOne({ where: { email } });
-
+  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+    const user = await this.usersService.findByEmail(loginDto.email);
     if (!user) {
-      throw new Error('Usuário não encontrado');
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new Error('Senha incorreta');
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    const token = this.generateToken(user);
-
-    // Atualiza o campo token do usuário no banco de dados
-    user.token = token;
-    await this.userRepository.save(user);
-
-    return { user, token };
-  }
-
-  private generateToken(user: User) {
-    return jwt.sign({ userId: user.id }, 'secretKey', { expiresIn: '1h' });
+    const payload = { sub: user.id, email: user.email };
+    const access_token = await this.jwtService.signAsync(payload);
+    return { access_token }; // Retorna o token aqui
   }
 }

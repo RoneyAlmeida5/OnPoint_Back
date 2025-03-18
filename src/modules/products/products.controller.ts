@@ -6,13 +6,16 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards, // Importa o UseGuards para aplicar o AuthGuard
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './product.entity';
+import { AuthGuard } from '../auth/auth.guard'; // Importa o JwtAuthGuard
 
 @Controller('products')
+@UseGuards(AuthGuard) // Aplica o AuthGuard a todos os endpoints do controlador
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 

@@ -1,13 +1,7 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { AuthMiddleware } from './middlewares/auth.middleware';
 import { ProductsModule } from './modules/products/products.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { SalesModule } from './modules/sales/sales.module';
@@ -31,13 +25,4 @@ import { SalesModule } from './modules/sales/sales.module';
     SalesModule,
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .exclude(
-        { path: 'users', method: RequestMethod.POST }, // Exclui a rota de criação de usuário
-      )
-      .forRoutes('*'); // Aplica o middleware para todas as outras rotas
-  }
-}
+export class AppModule {}
