@@ -5,12 +5,13 @@ import {
   TableForeignKey,
 } from 'typeorm';
 
-export class CreateSalesTable1742233699759 implements MigrationInterface {
+export class CreateSalesProductsTable1742336776915
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('sales', true); // Removendo a antiga (se necessário)
     await queryRunner.createTable(
       new Table({
-        name: 'sales',
+        name: 'sales_products',
         columns: [
           {
             name: 'id',
@@ -20,41 +21,44 @@ export class CreateSalesTable1742233699759 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'user_id',
+            name: 'sale_id',
             type: 'int',
             isNullable: false,
           },
           {
-            name: 'payment_id',
+            name: 'product_id',
             type: 'int',
             isNullable: false,
           },
           {
-            name: 'date_sale',
-            type: 'datetime',
-            default: 'CURRENT_TIMESTAMP',
+            name: 'quantity',
+            type: 'int',
+            isNullable: false,
+            unsigned: true,
           },
         ],
       }),
+      true,
     );
 
-    await queryRunner.createForeignKeys('sales', [
+    // Adicionando chaves estrangeiras
+    await queryRunner.createForeignKeys('sales_products', [
       new TableForeignKey({
-        columnNames: ['user_id'],
+        columnNames: ['sale_id'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'users',
+        referencedTableName: 'sales',
         onDelete: 'CASCADE',
       }),
       new TableForeignKey({
-        columnNames: ['payment_id'],
+        columnNames: ['product_id'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'payments',
+        referencedTableName: 'products',
         onDelete: 'CASCADE',
       }),
     ]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('sales');
+    await queryRunner.dropTable('sales_products');
   }
 }

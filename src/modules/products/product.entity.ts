@@ -1,27 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BeforeInsert,
+} from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { BeforeInsert } from 'typeorm';
-import { Sale } from '../sales/sale.entity';
+import { SaleProduct } from '../sales/sales_product.entity';
 
-@Entity('products') // Defina o nome explícito para evitar erros
+@Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 36, unique: true }) // Corrigindo o tipo
+  @Column({ type: 'varchar', length: 36, unique: true })
   uuid: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 }) // Ajuste para valores decimais
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   value: number;
 
-  @Column({ type: 'text' }) // Correção para suportar grandes textos
+  @Column({ type: 'text' })
   description: string;
 
-  @OneToMany(() => Sale, (sale) => sale.product)
-  sales: Sale[];
+  // Atualize para refletir a relação com SaleProduct
+  @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.product, {
+    cascade: true,
+  })
+  saleProducts: SaleProduct[];
 
   @BeforeInsert()
   generateUuid() {

@@ -10,12 +10,11 @@ import {
   Request,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { Sale } from './sale.entity';
-import { AuthGuard } from '../auth/auth.guard'; // ✅ Importando o AuthGuard
+import { AuthGuard } from '../auth/auth.guard';
 
-@UseGuards(AuthGuard) // ✅ Aplica o guard a todas as rotas
+@UseGuards(AuthGuard)
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
@@ -32,10 +31,15 @@ export class SalesController {
     return this.salesService.findOne(id);
   }
 
-  @Post()
-  create(@Body() createSaleDto: CreateSaleDto, @Request() req): Promise<Sale> {
+  @Post('createSales')
+  createSales(
+    @Body('produtos') produtos: { uuid: string; quantity: number }[], // Modificado para receber a quantidade
+    @Body('userId') userId: number,
+    @Body('paymentId') paymentId: number,
+    @Request() req,
+  ): Promise<Sale[]> {
     console.log('Usuário autenticado:', req.user);
-    return this.salesService.create(createSaleDto);
+    return this.salesService.createSales(produtos, userId, paymentId);
   }
 
   @Put(':id')

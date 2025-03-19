@@ -18,11 +18,11 @@ import { SalesModule } from './modules/sales/sales.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    SalesModule,
     AuthModule,
     UsersModule,
     ProductsModule,
     PaymentsModule,
-    SalesModule,
   ],
 })
 export class AppModule {}

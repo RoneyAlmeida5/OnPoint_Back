@@ -2,14 +2,15 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   JoinColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { Product } from '../products/product.entity';
 import { Payment } from '../payments/payment.entity';
+import { SaleProduct } from '../sales/sales_product.entity';
 
-@Entity('sales') // Nome explícito da tabela
+@Entity('sales')
 export class Sale {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,17 +19,15 @@ export class Sale {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Product, { nullable: false, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'product_id' })
-  product: Product;
-
   @ManyToOne(() => Payment, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'payment_id' })
   payment: Payment;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' }) // Correção do tipo para MySQL
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   date_sale: Date;
 
-  @Column({ type: 'int', unsigned: true }) // Correção para números positivos
-  quantity: number;
+  @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.sale, {
+    cascade: true,
+  })
+  saleProducts: SaleProduct[];
 }

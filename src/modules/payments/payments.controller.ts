@@ -6,19 +6,19 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards, // Importar o UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { Payment } from './payment.entity';
-import { AuthGuard } from '../auth/auth.guard'; // Importar o AuthGuard
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @UseGuards(AuthGuard) // Aplicar o AuthGuard a todos os endpoints
+  @UseGuards(AuthGuard)
   @Get()
   findAll(): Promise<Payment[]> {
     return this.paymentsService.findAll();

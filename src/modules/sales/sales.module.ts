@@ -3,13 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SalesService } from './sales.service';
 import { SalesController } from './sales.controller';
 import { Sale } from './sale.entity';
-import { AuthGuard } from '../auth/auth.guard'; // ✅ Importando AuthGuard
-import { JwtService } from '@nestjs/jwt'; // ✅ Necessário para validar o token
+import { AuthGuard } from '../auth/auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../users/user.entity';
+import { Product } from '../products/product.entity';
+import { Payment } from '../payments/payment.entity';
+import { SaleProduct } from './sales_product.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Sale])],
-  providers: [SalesService, AuthGuard, JwtService], // ✅ Registrando o AuthGuard e JwtService
-  controllers: [SalesController],
+  imports: [
+    TypeOrmModule.forFeature([Sale, User, Product, Payment, SaleProduct]),
+  ],
+  providers: [SalesService, AuthGuard, JwtService],
+  controllers: [SalesController], // Certifique-se de que o SalesController está aqui
   exports: [SalesService],
 })
 export class SalesModule {}
