@@ -24,7 +24,9 @@ export class SalesService {
   ) {}
 
   async findAll(): Promise<Sale[]> {
-    return this.salesRepository.find();
+    return this.salesRepository.find({
+      relations: ['user', 'payment', 'salesProducts', 'salesProducts.product'],
+    });
   }
 
   async findOne(id: number): Promise<Sale> {

@@ -29,5 +29,5 @@ export class Sale {
   @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.sale, {
     cascade: true,
   })
-  saleProducts: SaleProduct[];
+  salesProducts: SaleProduct[];
 }

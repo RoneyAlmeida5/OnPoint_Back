@@ -13,7 +13,7 @@ export class SaleProduct {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Sale, (sale) => sale.saleProducts, {
+  @ManyToOne(() => Sale, (sale) => sale.salesProducts, {
     nullable: false,
     onDelete: 'CASCADE',
   })
