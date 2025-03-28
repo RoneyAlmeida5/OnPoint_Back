@@ -4,9 +4,11 @@ import {
   Column,
   OneToMany,
   BeforeInsert,
+  ManyToOne,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { SaleProduct } from '../sales/sales_product.entity';
+import { Company } from '../company/company.entity';
 
 @Entity('products')
 export class Product {
@@ -24,6 +26,12 @@ export class Product {
 
   @Column({ type: 'text' })
   description: string;
+
+  @ManyToOne(() => Company, (company) => company.users, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  company: Company;
 
   // Atualize para refletir a relação com SaleProduct
   @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.product, {

@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { Sale } from '../sales/sale.entity';
+import { Company } from '../company/company.entity';
 
 @Entity('payments') // Nome explícito da tabela para evitar conflitos
 export class Payment {
@@ -11,4 +18,10 @@ export class Payment {
 
   @OneToMany(() => Sale, (sale) => sale.payment)
   sales: Sale[];
+
+  @ManyToOne(() => Company, (company) => company.users, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  company: Company;
 }

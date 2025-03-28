@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from '../auth/dto/create-user.dto';
 import { UpdateUserDto } from '../auth/dto/update-user.dto';
+import { Company } from '../company/company.entity';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
@@ -12,14 +13,35 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    @InjectRepository(Company) // Injete o repositório da empresa
+    private companyRepository: Repository<Company>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const { companyId, password, ...userData } = createUserDto;
 
+    // Permitir que company seja `null` ou `undefined`
+    let company: Company | null | undefined = undefined; // Inicialize como `undefined` se não houver companyId
+    if (companyId) {
+      company = await this.companyRepository.findOne({
+        where: { id: companyId },
+      });
+      if (!company) {
+        throw new NotFoundException(
+          `Empresa com ID ${companyId} não encontrada.`,
+        );
+      }
+    }
+
+    // Hash da senha
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Criar o usuário e associá-lo à empresa, se fornecido
     const user = this.userRepository.create({
-      ...createUserDto,
+      ...userData,
       password: hashedPassword,
+      company, // Se não houver companyId, `company` será `undefined`
     });
 
     const savedUser = await this.userRepository.save(user);
@@ -35,11 +57,14 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({ relations: ['company'] }); // Inclua a relação com a empresa
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['company'], // Inclua a relação com a empresa
+    });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -55,7 +80,22 @@ export class UsersService {
   }
 
   private generateToken(user: User) {
-    return jwt.sign({ userId: user.id }, 'secretKey', { expiresIn: '1h' });
+    return jwt.sign(
+      {
+        userId: user.id,
+        companyId: user.company?.id,
+        role: user.id === 1 ? 'admin' : 'user', // Admin = id 1
+      },
+      'xFiEjr0GjS8Q',
+      { expiresIn: '1h' },
+    );
+  }
+
+  async findByCompany(companyId: number): Promise<User[]> {
+    return this.userRepository.find({
+      where: { company: { id: companyId } },
+      relations: ['company'],
+    });
   }
 
   async findByEmail(email: string): Promise<User | null> {

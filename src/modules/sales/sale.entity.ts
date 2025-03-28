@@ -9,6 +9,7 @@ import {
 import { User } from '../users/user.entity';
 import { Payment } from '../payments/payment.entity';
 import { SaleProduct } from '../sales/sales_product.entity';
+import { Company } from '../company/company.entity';
 
 @Entity('sales')
 export class Sale {
@@ -25,6 +26,12 @@ export class Sale {
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   date_sale: Date;
+
+  @ManyToOne(() => Company, (company) => company.users, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  company: Company;
 
   @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.sale, {
     cascade: true,
