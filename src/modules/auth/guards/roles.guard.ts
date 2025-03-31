@@ -31,6 +31,8 @@ export class RolesGuard extends JwtAuthGuard implements CanActivate {
     }
 
     const hasRole = roles.some((role) => role === user.role);
+    console.log('Role check:', hasRole); // Verifique a comparação de roles
+
     if (!hasRole) {
       throw new ForbiddenException('Acesso negado');
     }

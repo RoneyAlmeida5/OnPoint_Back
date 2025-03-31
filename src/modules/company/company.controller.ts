@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
+import { UnauthorizedException } from '@nestjs/common';
 import { Company } from './company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -58,9 +59,15 @@ export class CompanyController {
   @Roles(Role.COMPANY_ADMIN)
   getMyCompany(@Request() req) {
     const { companyId, id } = req.user;
+
+    if (!companyId) {
+      throw new UnauthorizedException('Company ID não encontrado no token');
+    }
+
     if (id === 1) {
       return { message: 'Admin logado. Não possui empresa específica.' };
     }
+
     return this.companyService.findOne(companyId);
   }
 

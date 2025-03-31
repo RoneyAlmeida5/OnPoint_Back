@@ -1,26 +1,24 @@
+// jwt.strategy.ts
 import { Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-jwt';
-import { ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
-export class JwtAuthGuard extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'xFiEjr0GjS8Q',
+      secretOrKey: 'xFiEjr0GjS8Q', // mesmo segredo usado na geração do token
     });
   }
 
   async validate(payload: any) {
-    console.log('JWT Payload:', payload); // Verifique se a `role` está presente
     return {
       id: payload.sub,
       email: payload.username,
       role: payload.role,
-      companyId: payload.companyId,
+      companyId: payload.companyId, // ✅ GARANTE QUE companyId estará disponível em req.user
     };
   }
 }

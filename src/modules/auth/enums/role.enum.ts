@@ -1,5 +1,5 @@
 export enum Role {
-  ADMIN = 'Admin',
-  USER = 'User',
+  ADMIN = 'admin',
+  USER = 'user',
   COMPANY_ADMIN = 'CompanyAdmin', // Novo papel para administradores de empresas
 }
