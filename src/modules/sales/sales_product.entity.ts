@@ -25,10 +25,8 @@ export class SaleProduct {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Company, (company) => company.users, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'companyId' })
   company: Company;
 
   @Column({ type: 'int', unsigned: true })

@@ -27,10 +27,8 @@ export class Sale {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   date_sale: Date;
 
-  @ManyToOne(() => Company, (company) => company.users, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => Company, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'companyId' })
   company: Company;
 
   @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.sale, {

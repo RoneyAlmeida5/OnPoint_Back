@@ -7,25 +7,32 @@ import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
 import { Payment } from '../payments/payment.entity';
 import { SaleProduct } from './sales_product.entity';
+import { Company } from '../company/company.entity';
 
 @Injectable()
 export class SalesService {
   constructor(
-    @InjectRepository(Sale)
-    private readonly salesRepository: Repository<Sale>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Sale) private readonly salesRepository: Repository<Sale>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(SaleProduct)
     private readonly salesProductRepository: Repository<SaleProduct>,
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>,
   ) {}
 
   async findAll(): Promise<Sale[]> {
     return this.salesRepository.find({
-      relations: ['user', 'payment', 'salesProducts', 'salesProducts.product'],
+      relations: [
+        'user',
+        'payment',
+        'salesProducts',
+        'salesProducts.product',
+        'company',
+      ],
     });
   }
 
@@ -61,7 +68,9 @@ export class SalesService {
     produtos: any[],
     userId: number,
     paymentId: number,
+    companyId: number, // O companyId agora vem do JWT
   ): Promise<Sale[]> {
+    // Buscar o usuário e pagamento
     const user = await this.userRepository.findOne({ where: { id: userId } });
     const payment = await this.paymentRepository.findOne({
       where: { id: paymentId },
@@ -71,12 +80,26 @@ export class SalesService {
       throw new Error('Usuário ou pagamento inválido.');
     }
 
+    // Buscar a empresa usando companyId do JWT
+    const company = await this.companyRepository.findOne({
+      where: { id: companyId },
+    });
+
+    if (!company) {
+      throw new Error('Empresa não encontrada.');
+    }
+
+    // Criar a venda
     const sale = new Sale();
     sale.user = user;
     sale.payment = payment;
     sale.date_sale = new Date();
+    sale.company = company; // A empresa associada
+
+    // Salvar a venda
     const savedSale = await this.salesRepository.save(sale);
 
+    // Criar os produtos da venda
     for (const produto of produtos) {
       const product = await this.productRepository.findOne({
         where: { uuid: produto.uuid },
@@ -90,6 +113,8 @@ export class SalesService {
       salesProduct.sale = savedSale;
       salesProduct.product = product;
       salesProduct.quantity = produto.quantity;
+      salesProduct.company = company; // Associando a empresa diretamente
+
       await this.salesProductRepository.save(salesProduct);
     }
 

@@ -6,16 +6,17 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards, // Importa o UseGuards para aplicar o AuthGuard
+  UseGuards,
+  Request, // Importa Request para pegar os dados do usuário autenticado
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './product.entity';
-import { AuthGuard } from '../auth/auth.guard'; // Importa o JwtAuthGuard
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('products')
-@UseGuards(AuthGuard) // Aplica o AuthGuard a todos os endpoints do controlador
+@UseGuards(AuthGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -30,8 +31,17 @@ export class ProductsController {
   }
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto): Promise<Product> {
-    return this.productsService.create(createProductDto);
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @Request() req,
+  ): Promise<Product> {
+    const companyId = Number(req.user.companyId); // Pega o companyId do usuário autenticado
+
+    if (!companyId) {
+      throw new Error('Company ID is missing in token'); // Verifica se companyId está presente
+    }
+
+    return this.productsService.create({ ...createProductDto, companyId });
   }
 
   @Put(':id')

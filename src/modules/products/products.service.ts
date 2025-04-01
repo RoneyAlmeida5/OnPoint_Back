@@ -33,7 +33,7 @@ export class ProductsService {
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    await this.findOne(id); // Check if the product exists
+    await this.findOne(id); // Verifica se o produto existe antes de atualizar
     await this.productRepository.update(id, updateProductDto);
     return this.findOne(id);
   }

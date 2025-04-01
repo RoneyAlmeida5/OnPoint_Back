@@ -33,13 +33,19 @@ export class SalesController {
 
   @Post('createSales')
   createSales(
-    @Body('produtos') produtos: { uuid: string; quantity: number }[], // Modificado para receber a quantidade
+    @Body('produtos') produtos: { uuid: string; quantity: number }[],
     @Body('userId') userId: number,
     @Body('paymentId') paymentId: number,
-    @Request() req,
+    @Request() req, // Aqui pegamos o companyId do JWT
   ): Promise<Sale[]> {
+    const companyId = req.user.companyId; // O companyId vem do JWT
     console.log('Usuário autenticado:', req.user);
-    return this.salesService.createSales(produtos, userId, paymentId);
+    return this.salesService.createSales(
+      produtos,
+      userId,
+      paymentId,
+      companyId,
+    );
   }
 
   @Put(':id')
