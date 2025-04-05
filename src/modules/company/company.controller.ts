@@ -30,30 +30,6 @@ export class CompanyController {
     return this.companyService.findAll();
   }
 
-  @Get(':id')
-  @Roles(Role.ADMIN)
-  findOne(@Param('id') id: number) {
-    return this.companyService.findOne(id);
-  }
-
-  @Post()
-  @SetMetadata('isPublic', true) // Permite criação sem login
-  create(@Body() data: CreateCompanyDto): Promise<Company> {
-    return this.companyService.create(data);
-  }
-
-  @Put(':id')
-  @Roles(Role.ADMIN)
-  update(@Param('id') id: number, @Body() data: any) {
-    return this.companyService.update(id, data);
-  }
-
-  @Delete(':id')
-  @Roles(Role.ADMIN)
-  remove(@Param('id') id: number) {
-    return this.companyService.remove(id);
-  }
-
   // 🔐 Rota para retornar dados da empresa logada
   @Get('me')
   @Roles(Role.COMPANY_ADMIN)
@@ -82,5 +58,29 @@ export class CompanyController {
     }
 
     return this.companyService.findUsersByCompany(companyId);
+  }
+
+  @Get(':id')
+  @Roles(Role.ADMIN)
+  findOne(@Param('id') id: number) {
+    return this.companyService.findOne(id);
+  }
+
+  @Post()
+  @SetMetadata('isPublic', true) // Permite criação sem login
+  create(@Body() data: CreateCompanyDto): Promise<Company> {
+    return this.companyService.create(data);
+  }
+
+  @Put(':id')
+  @Roles(Role.ADMIN)
+  update(@Param('id') id: number, @Body() data: any) {
+    return this.companyService.update(id, data);
+  }
+
+  @Delete(':id')
+  @Roles(Role.ADMIN)
+  remove(@Param('id') id: number) {
+    return this.companyService.remove(id);
   }
 }
