@@ -12,8 +12,8 @@ export class PaymentsService {
     private readonly paymentsRepository: Repository<Payment>,
   ) {}
 
-  async findAll(): Promise<Payment[]> {
-    return this.paymentsRepository.find();
+  async findAll(companyId: number): Promise<Payment[]> {
+    return this.paymentsRepository.find({ where: { companyId } });
   }
 
   async findOne(id: number): Promise<Payment> {
@@ -24,16 +24,29 @@ export class PaymentsService {
     return payment;
   }
 
-  async create(createPaymentDto: CreatePaymentDto): Promise<Payment> {
-    const newPayment = this.paymentsRepository.create(createPaymentDto);
+  async create(
+    createPaymentDto: CreatePaymentDto,
+    companyId: number,
+  ): Promise<Payment> {
+    const newPayment = this.paymentsRepository.create({
+      ...createPaymentDto,
+      companyId,
+    });
     return this.paymentsRepository.save(newPayment);
   }
 
   async update(
     id: number,
     updatePaymentDto: UpdatePaymentDto,
+    companyId: number,
   ): Promise<Payment> {
-    const existingPayment = await this.findOne(id); // ✅ Agora garantimos que não será null
+    const existingPayment = await this.findOne(id);
+
+    if (existingPayment.companyId !== companyId) {
+      throw new Error(
+        'Acesso negado: este método de pagamento pertence a outra empresa',
+      );
+    }
 
     const updatedPayment = {
       ...existingPayment,
@@ -44,7 +57,14 @@ export class PaymentsService {
     return this.findOne(id);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, companyId: number): Promise<void> {
+    const payment = await this.findOne(id);
+    if (payment.companyId !== companyId) {
+      throw new Error(
+        'Acesso negado: este método de pagamento pertence a outra empresa',
+      );
+    }
+
     const result = await this.paymentsRepository.delete(id);
     if (result.affected === 0) {
       throw new Error(`Método de pagamento com ID ${id} não encontrado`);

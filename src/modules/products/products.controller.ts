@@ -7,7 +7,8 @@ import {
   Body,
   Param,
   UseGuards,
-  Request, // Importa Request para pegar os dados do usuário autenticado
+  Request,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -21,12 +22,13 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(): Promise<Product[]> {
-    return this.productsService.findAll();
+  findAll(@Request() req) {
+    const companyId = req.user.companyId;
+    return this.productsService.findAll(companyId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Product> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productsService.findOne(id);
   }
 
@@ -35,22 +37,26 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
     @Request() req,
   ): Promise<Product> {
-    const companyId = Number(req.user.companyId); // Pega o companyId do usuário autenticado
-
+    const companyId = Number(req.user.companyId);
     if (!companyId) {
-      throw new Error('Company ID is missing in token'); // Verifica se companyId está presente
+      throw new Error('Company ID is missing in token');
     }
-
-    return this.productsService.create({ ...createProductDto, companyId });
+    return this.productsService.create(createProductDto, companyId);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto,
+    @Request() req,
+  ): Promise<Product> {
+    const companyId = Number(req.user.companyId);
+    return this.productsService.update(id, updateProductDto, companyId);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.productsService.delete(id);
+  delete(@Param('id', ParseIntPipe) id: number, @Request() req): Promise<void> {
+    const companyId = Number(req.user.companyId);
+    return this.productsService.delete(id, companyId);
   }
 }

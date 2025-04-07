@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -15,36 +16,40 @@ import { Payment } from './payment.entity';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('payments')
+@UseGuards(AuthGuard)
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
-  findAll(): Promise<Payment[]> {
-    return this.paymentsService.findAll();
+  findAll(@Request() req): Promise<Payment[]> {
+    const companyId = Number(req.user.companyId);
+    return this.paymentsService.findAll(companyId);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Payment> {
     return this.paymentsService.findOne(id);
   }
 
-  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto): Promise<Payment> {
-    return this.paymentsService.create(createPaymentDto);
+  create(@Body() dto: CreatePaymentDto, @Request() req): Promise<Payment> {
+    const companyId = Number(req.user.companyId);
+    return this.paymentsService.create(dto, companyId);
   }
 
-  @UseGuards(AuthGuard)
   @Put(':id')
-  update(@Param('id') id: number, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(id, updatePaymentDto);
+  update(
+    @Param('id') id: number,
+    @Body() dto: UpdatePaymentDto,
+    @Request() req,
+  ): Promise<Payment> {
+    const companyId = Number(req.user.companyId);
+    return this.paymentsService.update(id, dto, companyId);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.paymentsService.delete(id);
+  delete(@Param('id') id: number, @Request() req): Promise<void> {
+    const companyId = Number(req.user.companyId);
+    return this.paymentsService.delete(id, companyId);
   }
 }
