@@ -22,7 +22,7 @@ export class SalesController {
   @Get()
   findAll(@Request() req): Promise<Sale[]> {
     console.log('Usuário autenticado:', req.user);
-    return this.salesService.findAll();
+    return this.salesService.findAll(req.user);
   }
 
   @Get(':id')

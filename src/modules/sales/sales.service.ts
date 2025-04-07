@@ -24,8 +24,15 @@ export class SalesService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async findAll(): Promise<Sale[]> {
+  async findAll(user: any): Promise<Sale[]> {
+    const isAdmin = user?.sub === 1 && user?.companyId === 1;
+
+    const whereClause = isAdmin
+      ? {} // Admin vê tudo
+      : { company: { id: user.companyId } }; // Demais usuários veem apenas da própria empresa
+
     return this.salesRepository.find({
+      where: whereClause,
       relations: [
         'user',
         'payment',
