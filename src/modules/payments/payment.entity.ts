@@ -5,22 +5,23 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { Sale } from '../sales/sale.entity';
 import { Company } from '../company/company.entity';
 
 @Entity('payments')
+@Unique(['name', 'companyId'])
 export class Payment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
   @OneToMany(() => Sale, (sale) => sale.payment)
   sales: Sale[];
 
-  // 👇 Adiciona esta coluna explicitamente
   @Column({ nullable: true })
   companyId: number;
 
@@ -28,6 +29,6 @@ export class Payment {
     nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'companyId' }) // 👈 Faz o vínculo manual com a coluna
+  @JoinColumn({ name: 'companyId' })
   company: Company;
 }

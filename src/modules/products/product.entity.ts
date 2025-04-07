@@ -6,17 +6,19 @@ import {
   BeforeInsert,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { SaleProduct } from '../sales/sales_product.entity';
 import { Company } from '../company/company.entity';
 
+@Index(['uuid', 'companyId'], { unique: true })
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 36, unique: true })
+  @Column({ type: 'varchar', length: 36 })
   uuid: string;
 
   @Column({ type: 'varchar', length: 255 })

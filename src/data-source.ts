@@ -1,10 +1,8 @@
 import { DataSource } from 'typeorm';
-import { User } from '../src/modules/users/user.entity';
-import { Company } from '../src/modules/company/company.entity';
-import { Product } from '../src/modules/products/product.entity';
-import { Sale } from '../src/modules/sales/sale.entity';
-import { Payment } from '../src/modules/payments/payment.entity';
-import { SaleProduct } from '../src/modules/sales/sales_product.entity';
+/* import { Product } from './dist/modules/products/product.entity.js';
+ import { Sale } from './dist/modules/sales/sale.entity.js';
+ import { User } from './dist/modules/users/user.entity.js';
+ import { Payment } from './dist/modules/payments/payment.entity.js'; */
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -13,6 +11,7 @@ export const AppDataSource = new DataSource({
   username: 'root',
   password: '1207',
   database: 'PDVs',
-  entities: [User, Company, Product, Sale, Payment, SaleProduct],
+  entities: [`/dist/**/*.entity{.js,.ts}`],
+  migrations: ['dist/migrations/*.js'],
   synchronize: false, // Importante: não use true em produção
 });
