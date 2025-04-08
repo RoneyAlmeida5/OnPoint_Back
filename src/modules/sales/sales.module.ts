@@ -23,7 +23,7 @@ import { Company } from '../company/company.entity';
     ]),
   ],
   providers: [SalesService, AuthGuard, JwtService],
-  controllers: [SalesController], // Certifique-se de que o SalesController está aqui
+  controllers: [SalesController],
   exports: [SalesService],
 })
 export class SalesModule {}

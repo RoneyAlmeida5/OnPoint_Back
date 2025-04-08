@@ -34,11 +34,11 @@ export class User {
   token: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
-  role: Role; // Propriedade para o papel do usuário
+  role: Role;
 
   @ManyToOne(() => Company, (company) => company.users, { nullable: true })
   @JoinColumn({ name: 'company_id' })
-  company?: Company; // Permite que seja `undefined`, mas não `null`
+  company?: Company;
 
   @Column({ default: false })
   user_blocked: boolean;

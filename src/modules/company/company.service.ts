@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './company.entity';
 import { Repository, DataSource } from 'typeorm';
-import { User } from '../users/user.entity'; // <- importa a entidade User
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class CompanyService {
@@ -11,7 +11,7 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
 
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>, // <- injeta o repositório de usuários
+    private readonly userRepository: Repository<User>,
 
     private readonly dataSource: DataSource,
   ) {}
@@ -49,10 +49,7 @@ export class CompanyService {
     await queryRunner.startTransaction();
 
     try {
-      // Excluir usuários relacionados à empresa
       await queryRunner.manager.delete(User, { company: { id } });
-
-      // Excluir a empresa
       await queryRunner.manager.delete(Company, { id });
 
       await queryRunner.commitTransaction();
@@ -68,7 +65,7 @@ export class CompanyService {
     await this.companyRepository.delete(id);
   }
 
-  // 🔐 Retorna usuários da empresa logada
+  // RETORNA USUARIOS DA EMPRESA LOGADA
   async findUsersByCompany(companyId: number) {
     return this.userRepository.find({
       where: { company: { id: companyId } },
@@ -76,7 +73,7 @@ export class CompanyService {
     });
   }
 
-  // 🔐 Retorna todos os usuários (admin)
+  // RETORNA TODOS OS USUARIOS (ADMIN === 1)
   async findAllUsers() {
     return this.userRepository.find({
       relations: ['company'],

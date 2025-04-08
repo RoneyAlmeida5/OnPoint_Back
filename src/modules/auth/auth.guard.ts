@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express'; // Importando Request do express
+import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -22,10 +22,10 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
     );
     if (isPublic) {
-      return true; // Permite acesso a rotas públicas
+      return true;
     }
 
-    const request: Request = context.switchToHttp().getRequest(); // Tipando explicitamente como Request
+    const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException('Token não encontrado');
@@ -34,20 +34,18 @@ export class AuthGuard implements CanActivate {
     let payload;
     try {
       payload = await this.jwtService.verifyAsync(token, {
-        secret: 'xFiEjr0GjS8Q', // Substitua pela sua chave secreta
+        secret: 'xFiEjr0GjS8Q',
       });
       request['user'] = payload;
     } catch (err) {
       throw new UnauthorizedException('Token inválido ou expirado');
     }
 
-    // Validação de companyId no token, quando necessário
     const companyId = payload.companyId;
     if (!companyId) {
       throw new UnauthorizedException('Company ID não encontrado no token');
     }
 
-    // Se o role do usuário não tiver acesso, podemos retornar um Forbidden
     const role = payload.role;
     if (role === 'User' && request.originalUrl.includes('/companies')) {
       throw new ForbiddenException(

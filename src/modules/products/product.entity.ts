@@ -40,7 +40,6 @@ export class Product {
   @Column({ type: 'int' })
   companyId: number;
 
-  // Atualize para refletir a relação com SaleProduct
   @OneToMany(() => SaleProduct, (saleProduct) => saleProduct.product, {
     cascade: true,
   })

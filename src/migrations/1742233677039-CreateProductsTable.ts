@@ -4,7 +4,6 @@ export class CreateProductTable1625839200000 implements MigrationInterface {
   name = 'CreateProductTable1625839200000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Criação da tabela 'product'
     await queryRunner.query(`
       CREATE TABLE \`products\` (
         \`id\` INT NOT NULL AUTO_INCREMENT,
@@ -18,7 +17,6 @@ export class CreateProductTable1625839200000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Dropando a tabela 'product'
     await queryRunner.query(`DROP TABLE \`products\``);
   }
 }

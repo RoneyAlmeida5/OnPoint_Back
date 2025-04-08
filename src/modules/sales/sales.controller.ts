@@ -36,9 +36,9 @@ export class SalesController {
     @Body('produtos') produtos: { uuid: string; quantity: number }[],
     @Body('userId') userId: number,
     @Body('paymentId') paymentId: number,
-    @Request() req, // Aqui pegamos o companyId do JWT
+    @Request() req,
   ): Promise<Sale[]> {
-    const companyId = req.user.companyId; // O companyId vem do JWT
+    const companyId = req.user.companyId;
     console.log('Usuário autenticado:', req.user);
     return this.salesService.createSales(
       produtos,

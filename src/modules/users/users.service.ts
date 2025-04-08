@@ -14,15 +14,14 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
 
-    @InjectRepository(Company) // Injete o repositório da empresa
+    @InjectRepository(Company)
     private companyRepository: Repository<Company>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const { companyId, password, ...userData } = createUserDto;
 
-    // Permitir que company seja `null` ou `undefined`
-    let company: Company | null | undefined = undefined; // Inicialize como `undefined` se não houver companyId
+    let company: Company | null | undefined = undefined;
     if (companyId) {
       company = await this.companyRepository.findOne({
         where: { id: companyId },
@@ -34,22 +33,18 @@ export class UsersService {
       }
     }
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Criar o usuário e associá-lo à empresa, se fornecido
     const user = this.userRepository.create({
       ...userData,
       password: hashedPassword,
-      company, // Se não houver companyId, `company` será `undefined`
+      company,
     });
 
     const savedUser = await this.userRepository.save(user);
 
-    // Gere o token JWT
     const token = this.generateToken(savedUser);
 
-    // Atualize o usuário com o token gerado
     savedUser.token = token;
     await this.userRepository.save(savedUser);
 
@@ -57,13 +52,13 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find({ relations: ['company'] }); // Inclua a relação com a empresa
+    return this.userRepository.find({ relations: ['company'] });
   }
 
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['company'], // Inclua a relação com a empresa
+      relations: ['company'],
     });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -84,7 +79,7 @@ export class UsersService {
       {
         userId: user.id,
         companyId: user.company?.id,
-        role: user.id === 1 ? 'admin' : 'user', // Admin = id 1
+        role: user.id === 1 ? 'admin' : 'user',
       },
       'xFiEjr0GjS8Q',
       { expiresIn: '1h' },

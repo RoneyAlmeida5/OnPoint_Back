@@ -7,7 +7,7 @@ import {
 
 export class CreateSalesTable1742233699759 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('sales', true); // Removendo a antiga (se necessário)
+    await queryRunner.dropTable('sales', true);
     await queryRunner.createTable(
       new Table({
         name: 'sales',

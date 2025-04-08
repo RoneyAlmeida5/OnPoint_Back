@@ -1,4 +1,3 @@
-// src/auth/guards/roles.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -6,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtAuthGuard } from './jwt-auth.guard'; // Importando o JwtAuthGuard
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Role } from '../enums/role.enum';
 
@@ -20,7 +19,7 @@ export class RolesGuard extends JwtAuthGuard implements CanActivate {
     const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
 
     if (!roles) {
-      return true; // Se nenhuma role for definida, libera o acesso
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
@@ -31,7 +30,7 @@ export class RolesGuard extends JwtAuthGuard implements CanActivate {
     }
 
     const hasRole = roles.some((role) => role === user.role);
-    console.log('Role check:', hasRole); // Verifique a comparação de roles
+    console.log('Role check:', hasRole);
 
     if (!hasRole) {
       throw new ForbiddenException('Acesso negado');

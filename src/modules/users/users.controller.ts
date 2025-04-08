@@ -1,4 +1,3 @@
-// src/users/users.controller.ts
 import {
   Controller,
   Get,
@@ -10,7 +9,7 @@ import {
   Req,
   UseGuards,
   SetMetadata,
-  UnauthorizedException, // Importe SetMetadata
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../auth/dto/create-user.dto';
@@ -44,9 +43,9 @@ export class UsersController {
   }
 
   @Post()
-  @SetMetadata('isPublic', true) // Marca a rota como pública
+  @SetMetadata('isPublic', true)
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto); // Envia o DTO para o serviço
+    return this.usersService.create(createUserDto);
   }
 
   @Put(':id')

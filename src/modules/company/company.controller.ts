@@ -25,12 +25,12 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Get()
-  @Roles(Role.ADMIN) // Somente admin pode listar todas
+  @Roles(Role.ADMIN)
   findAll() {
     return this.companyService.findAll();
   }
 
-  // 🔐 Rota para retornar dados da empresa logada
+  // ROTA PARA RETORNAR DADOS DA EMPRESA LOGADA
   @Get('me')
   @Roles(Role.COMPANY_ADMIN)
   getMyCompany(@Request() req) {
@@ -47,14 +47,14 @@ export class CompanyController {
     return this.companyService.findOne(companyId);
   }
 
-  // 🔐 Rota para listar os usuários da empresa logada
+  // ROTA PARA LISTAR OS USUARIOS DA EMPRESA LOGADA
   @Get('my-users')
   @Roles(Role.COMPANY_ADMIN, Role.ADMIN)
   async getMyUsers(@Request() req) {
     const { id, companyId, role } = req.user;
 
     if (id === 1) {
-      return this.companyService.findAllUsers(); // Admin acessa todos
+      return this.companyService.findAllUsers();
     }
 
     return this.companyService.findUsersByCompany(companyId);
@@ -67,7 +67,7 @@ export class CompanyController {
   }
 
   @Post()
-  @SetMetadata('isPublic', true) // Permite criação sem login
+  @SetMetadata('isPublic', true)
   create(@Body() data: CreateCompanyDto): Promise<Company> {
     return this.companyService.create(data);
   }

@@ -51,7 +51,7 @@ export class ProductsService {
     }
 
     await this.productRepository.update(id, updateProductDto);
-    return this.findOne(id); // ou return this.productRepository.findOne({ where: { id } });
+    return this.findOne(id);
   }
 
   async delete(id: number, companyId: number): Promise<void> {

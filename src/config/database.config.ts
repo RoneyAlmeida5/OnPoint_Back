@@ -4,10 +4,10 @@ export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
   host: '127.0.0.1',
   port: 3306,
-  username: 'root', // substitua pelo seu usuário do banco de dados
-  password: '1207', // substitua pela sua senha
+  username: 'root',
+  password: '1207',
   database: 'PDVs',
   entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
-  synchronize: true, // Define como true durante o desenvolvimento
+  synchronize: true,
   connectTimeout: 10000,
 };

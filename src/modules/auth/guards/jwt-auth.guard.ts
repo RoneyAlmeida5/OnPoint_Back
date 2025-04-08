@@ -15,7 +15,7 @@ export class JwtAuthGuard extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log('JWT Payload:', payload); // Verifique se a `role` está presente
+    console.log('JWT Payload:', payload);
     return {
       id: payload.sub,
       email: payload.username,

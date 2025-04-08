@@ -5,8 +5,8 @@ import { AuthController } from './auth.controller';
 import { User } from '../users/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from '../users/users.module'; // Importe UsersModule
-import { JwtStrategy } from './strategies/jwt.strategy'; // IMPORTANTE: Importe o JwtStrategy
+import { UsersModule } from '../users/users.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -22,10 +22,10 @@ import { JwtStrategy } from './strategies/jwt.strategy'; // IMPORTANTE: Importe 
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UsersModule, // Adicione UsersModule aqui
+    UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy], // ADICIONADO: Registrando o JwtStrategy aqui
+  providers: [AuthService, JwtStrategy],
   exports: [JwtModule],
 })
 export class AuthModule {}

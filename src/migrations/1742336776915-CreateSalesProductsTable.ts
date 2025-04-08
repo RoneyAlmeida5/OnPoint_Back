@@ -41,7 +41,6 @@ export class CreateSalesProductsTable1742336776915
       true,
     );
 
-    // Adicionando chaves estrangeiras
     await queryRunner.createForeignKeys('sales_products', [
       new TableForeignKey({
         columnNames: ['sale_id'],

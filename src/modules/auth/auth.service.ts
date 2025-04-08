@@ -1,4 +1,3 @@
-// Exemplo de auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -29,10 +28,10 @@ export class AuthService {
     const payload = {
       username: user.email,
       sub: user.id,
-      companyId: user.company?.id, // <-- isso aqui é crucial
+      companyId: user.company?.id,
       role: user.role,
     };
     const access_token = await this.jwtService.signAsync(payload);
-    return { access_token }; // Retorna o token aqui
+    return { access_token };
   }
 }
