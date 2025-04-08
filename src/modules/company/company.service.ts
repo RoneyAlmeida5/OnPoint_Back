@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from './company.entity';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { User } from '../users/user.entity'; // <- importa a entidade User
 
 @Injectable()
@@ -12,6 +12,8 @@ export class CompanyService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>, // <- injeta o repositório de usuários
+
+    private readonly dataSource: DataSource,
   ) {}
 
   findAll(): Promise<Company[]> {
@@ -39,6 +41,27 @@ export class CompanyService {
   async update(id: number, data: Partial<Company>): Promise<Company> {
     await this.companyRepository.update(id, data);
     return this.findOne(id);
+  }
+
+  async removeWithUsers(id: number): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Excluir usuários relacionados à empresa
+      await queryRunner.manager.delete(User, { company: { id } });
+
+      // Excluir a empresa
+      await queryRunner.manager.delete(Company, { id });
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number): Promise<void> {

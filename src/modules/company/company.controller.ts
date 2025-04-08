@@ -80,7 +80,7 @@ export class CompanyController {
 
   @Delete(':id')
   @Roles(Role.ADMIN)
-  remove(@Param('id') id: number) {
-    return this.companyService.remove(id);
+  async remove(@Param('id') id: number): Promise<void> {
+    await this.companyService.removeWithUsers(id);
   }
 }
